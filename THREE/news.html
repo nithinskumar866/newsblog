@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Chronicle | Professional News Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2a9d8f;
+            --primary-dark: #21897d;
+            --secondary: #264653;
+            --accent: #e9c46a;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border: #dee2e6;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--secondary), #1a3655);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.8rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-bar input {
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            width: 220px;
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+            width: 280px;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1.2rem;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .action-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .view-all {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .view-all:hover {
+            color: var(--primary-dark);
+            gap: 0.7rem;
+        }
+
+        /* Featured Article */
+        .featured-article {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 3rem;
+            transition: var(--transition);
+            display: flex;
+            height: 450px;
+        }
+
+        .featured-article:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .featured-image {
+            flex: 1;
+            background: linear-gradient(120deg, #2a9d8f, #264653);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .featured-content {
+            flex: 1;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .category-tag {
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1.2rem;
+        }
+
+        .featured-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+
+        .featured-excerpt {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .author-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .author-name {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .read-more {
+            align-self: flex-start;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .read-more:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
+        }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .article-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-image {
+            height: 200px;
+            background: linear-gradient(120deg, #e9c46a, #f4a261);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-category {
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 0.8rem;
+            color: var(--secondary);
+            flex: 1;
+        }
+
+        .card-excerpt {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .card-date {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .card-read-time {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* Trending Section */
+        .trending-section {
+            margin-bottom: 3rem;
+        }
+
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .trending-card {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .trending-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .trending-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--light-gray);
+            min-width: 40px;
+        }
+
+        .trending-content {
+            flex: 1;
+        }
+
+        .trending-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .trending-meta {
+            display: flex;
+            gap: 0.8rem;
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* Categories Section */
+        .categories-section {
+            margin-bottom: 3rem;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background: var(--primary);
+        }
+
+        .category-card:hover .category-icon,
+        .category-card:hover .category-name,
+        .category-card:hover .article-count {
+            color: white;
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .category-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .article-count {
+            color: var(--gray);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        /* Article Detail */
+        .article-detail {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            padding: 2.5rem;
+        }
+
+        .detail-header {
+            margin-bottom: 2rem;
+        }
+
+        .detail-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .detail-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-author {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .detail-author-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--light-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .detail-author-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .detail-author-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .detail-image {
+            height: 450px;
+            background: linear-gradient(120deg, #2a9d8f, #264653);
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .article-content {
+            line-height: 1.8;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .article-content h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1.5rem;
+            color: var(--secondary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .article-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .article-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            background: var(--light);
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: var(--gray);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--secondary);
+            color: white;
+            padding: 3rem 2rem 1.5rem;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.7rem;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            gap: 0.7rem;
+        }
+
+        .footer-links a i {
+            font-size: 0.8rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.2rem;
+        }
+
+        .social-links a {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .featured-article {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .featured-image {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-bar input {
+                width: 100%;
+            }
+
+            .search-bar input:focus {
+                width: 100%;
+            }
+
+            .featured-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0 1rem;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-globe-americas"></i>
+                    GLOBAL<span>CHRONICLE</span>
+                </div>
+                
+                <div class="nav-links">
+                    <a href="#" class="nav-link active">Home</a>
+                    <a href="#" class="nav-link">World</a>
+                    <a href="#" class="nav-link">Politics</a>
+                    <a href="#" class="nav-link">Business</a>
+                    <a href="#" class="nav-link">Technology</a>
+                    <a href="#" class="nav-link">Culture</a>
+                    <a href="#" class="nav-link">Science</a>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" v-model="searchQuery" placeholder="Search news...">
+                    </div>
+                    
+                    <div class="user-actions">
+                        <button class="action-btn">
+                            <i class="far fa-bookmark"></i>
+                        </button>
+                        <button class="action-btn">
+                            <i class="far fa-bell"></i>
+                            <span class="notification-badge">3</span>
+                        </button>
+                        <button class="action-btn" @click="toggleUserMenu">
+                            <i class="far fa-user"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content" v-if="currentView === 'home'">
+            <!-- Featured Article -->
+            <section class="featured-section">
+                <div class="featured-article" @click="viewArticle(featuredArticle.id)">
+                    <div class="featured-image">
+                        Featured Article Image
+                    </div>
+                    <div class="featured-content">
+                        <span class="category-tag">{{ featuredArticle.category }}</span>
+                        <h2 class="featured-title">{{ featuredArticle.title }}</h2>
+                        <p class="featured-excerpt">{{ featuredArticle.excerpt }}</p>
+                        
+                        <div class="article-meta">
+                            <div class="author">
+                                <div class="author-img">{{ featuredArticle.authorInitials }}</div>
+                                <span class="author-name">{{ featuredArticle.author }}</span>
+                            </div>
+                            <span class="date">{{ featuredArticle.date }} · {{ featuredArticle.readTime }} min read</span>
+                        </div>
+                        
+                        <a href="#" class="read-more">
+                            Read Full Article
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Latest News Grid -->
+            <section class="latest-section">
+                <div class="content-header">
+                    <h2 class="section-title">Latest News</h2>
+                    <a href="#" class="view-all">
+                        View All
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="news-grid">
+                    <article class="article-card" v-for="article in latestArticles" :key="article.id" @click="viewArticle(article.id)">
+                        <div class="card-image">
+                            Article Image
+                        </div>
+                        <div class="card-content">
+                            <span class="card-category">{{ article.category }}</span>
+                            <h3 class="card-title">{{ article.title }}</h3>
+                            <p class="card-excerpt">{{ article.excerpt }}</p>
+                            <div class="card-footer">
+                                <span class="card-date">{{ article.date }}</span>
+                                <span class="card-read-time">
+                                    <i class="far fa-clock"></i> {{ article.readTime }} min
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            
+            <!-- Trending Section -->
+            <section class="trending-section">
+                <div class="content-header">
+                    <h2 class="section-title">Trending Now</h2>
+                    <a href="#" class="view-all">
+                        View All
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="trending-grid">
+                    <div class="trending-card" v-for="(trend, index) in trendingArticles" :key="trend.id" @click="viewArticle(trend.id)">
+                        <div class="trending-number">{{ index + 1 }}</div>
+                        <div class="trending-content">
+                            <h3 class="trending-title">{{ trend.title }}</h3>
+                            <div class="trending-meta">
+                                <span>{{ trend.category }}</span>
+                                <span>{{ trend.views }} views</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Categories Section -->
+            <section class="categories-section">
+                <div class="content-header">
+                    <h2 class="section-title">Browse Categories</h2>
+                </div>
+                
+                <div class="categories-grid">
+                    <div class="category-card" v-for="category in categories" :key="category.id" @click="filterByCategory(category.name)">
+                        <i :class="category.icon" class="category-icon"></i>
+                        <h3 class="category-name">{{ category.name }}</h3>
+                        <span class="article-count">{{ category.articleCount }} Articles</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Article Detail View -->
+        <div class="main-content" v-if="currentView === 'article'">
+            <div class="article-detail">
+                <div class="detail-header">
+                    <span class="category-tag">{{ currentArticle.category }}</span>
+                    <h1 class="detail-title">{{ currentArticle.title }}</h1>
+                    
+                    <div class="detail-meta">
+                        <div class="detail-author">
+                            <div class="detail-author-img">{{ currentArticle.authorInitials }}</div>
+                            <div class="detail-author-info">
+                                <h4>{{ currentArticle.author }}</h4>
+                                <p>Senior Correspondent</p>
+                            </div>
+                        </div>
+                        <div class="date">{{ currentArticle.date }} · {{ currentArticle.readTime }} min read</div>
+                    </div>
+                </div>
+                
+                <div class="detail-image">
+                    Article Featured Image
+                </div>
+                
+                <div class="article-content">
+                    <p>{{ currentArticle.content }}</p>
+                    
+                    <h2>The Future of Quantum Computing</h2>
+                    
+                    <p>With this breakthrough, researchers believe we're on the cusp of solving problems that were previously considered unsolvable. Quantum computers could model complex molecular interactions for drug discovery, optimize global logistics networks, and break current encryption methods.</p>
+                    
+                    <blockquote>
+                        "This represents a paradigm shift in computing. We're not just improving existing systems - we're creating entirely new capabilities that will transform industries."
+                    </blockquote>
+                    
+                    <p>Major tech companies are already investing billions in quantum computing research. Google, IBM, and Microsoft are in a race to achieve quantum supremacy and bring practical quantum computers to market.</p>
+                    
+                    <p>While challenges remain in scaling quantum systems and maintaining qubit stability, the progress made by Quantum Labs suggests we may see practical quantum applications within the next decade rather than the next quarter-century as previously predicted.</p>
+                </div>
+                
+                <button class="read-more" @click="currentView = 'home'" style="margin-top: 2rem;">
+                    <i class="fas fa-arrow-left"></i> Back to News
+                </button>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Global Chronicle</h3>
+                    <p>Delivering trusted news and insightful analysis to millions of readers worldwide since 2005.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Categories</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> World News</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Politics</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Business & Finance</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Technology</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Science & Environment</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Careers</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Advertise</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Newsletter</h3>
+                    <p>Subscribe to our daily newsletter for the latest news and insights delivered to your inbox.</p>
+                    <div class="search-bar" style="margin-top: 1rem;">
+                        <input type="email" placeholder="Your email address">
+                        <button class="read-more" style="margin-top: 1rem; width: 100%;">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Global Chronicle. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--primary);"></i> for informed citizens</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                currentView: 'home',
+                searchQuery: '',
+                featuredArticle: {
+                    id: 1,
+                    category: 'Technology',
+                    title: 'Quantum Computing Breakthrough Opens Door to Unprecedented Processing Power',
+                    excerpt: 'Scientists at Quantum Labs have achieved a major milestone in quantum computing stability, paving the way for commercial applications that could revolutionize industries from pharmaceuticals to finance.',
+                    author: 'James Donovan',
+                    authorInitials: 'JD',
+                    date: 'June 15, 2023',
+                    readTime: 8
+                },
+                latestArticles: [
+                    {
+                        id: 2,
+                        category: 'Business',
+                        title: 'Global Markets Surge as Economic Recovery Exceeds Expectations',
+                        excerpt: 'Stock markets worldwide reached record highs as economic indicators show stronger than anticipated recovery across major economies.',
+                        date: 'June 14, 2023',
+                        readTime: 4
+                    },
+                    {
+                        id: 3,
+                        category: 'Environment',
+                        title: 'New Climate Agreement Reached by 40 Nations at Global Summit',
+                        excerpt: 'World leaders commit to ambitious carbon reduction targets in landmark agreement that aims to limit global warming to 1.5°C.',
+                        date: 'June 13, 2023',
+                        readTime: 6
+                    },
+                    {
+                        id: 4,
+                        category: 'Technology',
+                        title: 'Next-Generation Electric Vehicles Set to Transform Auto Industry',
+                        excerpt: 'Major automakers unveil revolutionary EV models with extended range and faster charging capabilities at International Auto Expo.',
+                        date: 'June 12, 2023',
+                        readTime: 5
+                    },
+                    {
+                        id: 5,
+                        category: 'Health',
+                        title: 'Breakthrough in Alzheimer\'s Research Offers New Hope for Treatment',
+                        excerpt: 'Researchers identify new mechanism for preventing protein buildup in the brain, opening pathways for innovative treatments.',
+                        date: 'June 11, 2023',
+                        readTime: 7
+                    }
+                ],
+                trendingArticles: [
+                    {
+                        id: 6,
+                        title: 'Revolutionary AI Assistant Passes Medical Licensing Exam',
+                        category: 'Technology',
+                        views: '15K'
+                    },
+                    {
+                        id: 7,
+                        title: 'Historic Peace Deal Signed After Decades of Conflict',
+                        category: 'Politics',
+                        views: '12K'
+                    },
+                    {
+                        id: 8,
+                        title: 'Breakthrough in Renewable Energy Storage Technology',
+                        category: 'Science',
+                        views: '10K'
+                    },
+                    {
+                        id: 9,
+                        title: 'Virtual Reality Art Exhibition Breaks Attendance Records',
+                        category: 'Culture',
+                        views: '8K'
+                    }
+                ],
+                categories: [
+                    { id: 1, name: 'World', icon: 'fas fa-globe-europe', articleCount: '1,245' },
+                    { id: 2, name: 'Politics', icon: 'fas fa-landmark', articleCount: '896' },
+                    { id: 3, name: 'Business', icon: 'fas fa-chart-line', articleCount: '1,102' },
+                    { id: 4, name: 'Technology', icon: 'fas fa-microchip', articleCount: '1,543' },
+                    { id: 5, name: 'Health', icon: 'fas fa-heartbeat', articleCount: '782' },
+                    { id: 6, name: 'Culture', icon: 'fas fa-paint-brush', articleCount: '654' }
+                ],
+                currentArticle: {
+                    id: 1,
+                    category: 'Technology',
+                    title: 'Quantum Computing Breakthrough Opens Door to Unprecedented Processing Power',
+                    author: 'James Donovan',
+                    authorInitials: 'JD',
+                    date: 'June 15, 2023',
+                    readTime: 8,
+                    content: 'In a landmark achievement for the field of quantum computing, researchers at Quantum Labs have successfully maintained quantum coherence for a record-breaking 5 minutes at room temperature. This breakthrough overcomes one of the most significant barriers to practical quantum computing and brings us closer to realizing the immense potential of this revolutionary technology.'
+                }
+            },
+            methods: {
+                viewArticle(id) {
+                    // In a real application, we would fetch the article from an API
+                    // For this demo, we'll just show the featured article
+                    this.currentArticle = this.featuredArticle;
+                    this.currentView = 'article';
+                },
+                filterByCategory(category) {
+                    alert(`Filtering by category: ${category}`);
+                    // In a real application, we would filter the articles
+                },
+                toggleUserMenu() {
+                    alert('User menu would appear here');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

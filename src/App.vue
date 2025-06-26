@@ -1,26 +1,50 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="app-container">
+    <HeaderSection />
+    <router-view v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+    <FooterSection />
+    <ScrollToTop />
+    <ScrollProgress />
+    <CustomCursor />
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HeaderSection from '@/components/HeaderSection.vue'
+import FooterSection from '@/components/FooterSection.vue'
+import ScrollToTop from '@/components/ScrollToTop.vue'
+import ScrollProgress from '@/components/ScrollProgress.vue'
+import CustomCursor from '@/components/CustomCursor.vue'
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
+    HeaderSection,
+    FooterSection,
+    ScrollToTop,
+    ScrollProgress,
+    CustomCursor
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 </style>
